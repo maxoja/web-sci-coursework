@@ -23,8 +23,6 @@ def group_sampling(group):
 def draw(G):
     if not PLOT_GRAPH:
         return
-    # pos = nx.spring_layout(G,scale=1,k=0.5)
-    # nx.draw_networkx(G,with_labels = False, node_size = 10)
     nx.draw(G,with_labels=True, node_size=5, font_size=0)
     plt.show()
 
@@ -61,8 +59,7 @@ def draw_type2_graph(links, name):
     print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
     draw(G)
 
-# A (Users occuring together)
-# links of mentions
+# Extract mention links into dict from statuses in a given group
 def mention_links(group):
     result = {}
     
@@ -84,7 +81,7 @@ def mention_links(group):
 
     return result
 
-# links of retweet
+# Extract retweet links into dict from statuses in a given group
 def retweet_links(group):
     result = {}
 
@@ -106,7 +103,7 @@ def retweet_links(group):
 
     return result
 
-# links of reply
+# Extract reply links into dict from statuses in a given group
 def reply_links(group):
     result = {}
 
@@ -129,8 +126,8 @@ def reply_links(group):
 
     return result
 
-# B
-# hashtag ocurring together
+
+# Extract hashtag cooccurence into dict from statuses in a given group
 def hashtag_occuring_together(group):
     result = {}
     
@@ -151,6 +148,7 @@ def hashtag_occuring_together(group):
 
     return result
 
+# count first and second order ties
 def ties_count(links):
     count_first = 0
     count_second = 0
@@ -172,10 +170,6 @@ def ties_count(links):
                 found_first.add((u,v))
                 count_first += 1
     return count_first, count_second
-    # num_before = G.number_of_edges()
-    # temp = G.to_undirected()
-    # num_after = G.number_of_edges()
-    # return num_after
 
 if __name__ == "__main__":    
     db = mongo.connect_to_db()

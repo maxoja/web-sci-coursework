@@ -4,14 +4,6 @@ import json
 import tweepy
 from credentials import *
 
-def insert_unique_doc(db, collection:str, doc:dict):
-    doc.hash = hash(frozenset(doc.items()))
-    db[collection].create_index([('hash', ASCENDING)],unique=True)
-    try:
-        insert_doc(db, collection, doc)
-    except Exception as e:
-        print('insert_unique_doc exception')
-
 def insert_unique_status(db, status:tweepy.models.Status):
     status_dict = status._json
     db['statuses'].create_index([('id', ASCENDING)],unique=True)
@@ -58,6 +50,7 @@ def connect_to_db():
     return db
 
 if __name__ == '__main__':
+    #test if everything works
     db = connect_to_db()
 
     names = ['Kitchen','Animal','State', 'Tastey', 'Big','City','Fish', 'Pizza','Goat', 'Salty','Sandwich','Lazy', 'Fun']

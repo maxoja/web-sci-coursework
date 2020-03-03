@@ -5,7 +5,6 @@ import config
 import my_util
 import sys
 
-# http://docs.tweepy.org/en/v3.4.0/streaming_how_to.html
 class StreamListener(tweepy.StreamListener):
     def __init__(self, timer:my_util.Timer):
         timer.start()
@@ -19,6 +18,7 @@ class StreamListener(tweepy.StreamListener):
         if self.timer.out_of_time():
             return False
 
+        # uniquely insert the obtained status to mongo DB (automatically deny duplicates)
         mongo.insert_unique_status(self.db, status)
         print('insert status with timestamp:', status.timestamp_ms)
         return True
@@ -37,5 +37,6 @@ def start(timer:my_util.Timer):
     print("done")
 
 if __name__ == '__main__':
+    # run stream crawler by the given duration
     minute = int(sys.argv[1])
     start(my_util.Timer(minute))

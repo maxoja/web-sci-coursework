@@ -7,12 +7,13 @@ import api_mongo as mongo
 import pickle
 import nltk
 
-db = mongo.connect_to_db()
-print('collection loading')
-all_statuses = list(db.get_collection('statuses').find())
-print('collection loaded with size =', len(all_statuses))
-
+# compute statistics of general data (all tweets)
 if __name__ == '__main__':
+    db = mongo.connect_to_db()
+    print('collection loading')
+    all_statuses = list(db.get_collection('statuses').find())
+    print('collection loaded with size =', len(all_statuses))
+    
     owners = []
     tags = []
     mentions = []
