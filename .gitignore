@@ -137,3 +137,5 @@ dmypy.json
 grouped_tweets.pickle
 
 meta.pickle
+
+credentials.py
