@@ -148,18 +148,30 @@ if __name__ == "__main__":
         if k == num_groups: # all statuses
             print('loadin all statuses from DB ...')
             group = list(db.statuses.find())
+
+            print(f'group {k} of size {len(group)}')
+            mention_interaction = mention_links(group)
+            draw_type1_graph(mention_interaction,str(k)+'-mention')
+
+            reply_interaction = reply_links(group)
+            draw_type1_graph(reply_links, str(k)+'-reply')
+            
+            hashtag_together = hashtag_occuring_together(group)
+            draw_type2_graph(hashtag_together, str(k)+'-hashtag')
+
+            retweet_interaction = retweet_links(group)
+            draw_type1_graph(retweet_interaction, str(k)+'-retweet')
         else:
             print(f'loading group {k} statuses from DB ...')
             group = list(db.get_collection(f'group_{k}').find())
 
-        print(f'group {k} of size {len(group)}')
-        
-        mention_interaction = mention_links(group)
-        draw_type1_graph(mention_interaction,'mention')
+            print(f'group {k} of size {len(group)}')
+            mention_interaction = mention_links(group)
+            draw_type1_graph(mention_interaction,str(k)+'-mention')
 
-        hashtag_together = hashtag_occuring_together(group)
-        draw_type2_graph(hashtag_together, 'hashtag')
-
-        retweet_interaction = retweet_links(group)
-        draw_type1_graph(retweet_interaction, 'retweet')
+            reply_interaction = reply_links(group)
+            draw_type1_graph(reply_interaction, str(k)+'-reply')
+            
+            hashtag_together = hashtag_occuring_together(group)
+            draw_type2_graph(hashtag_together, str(k)+'-hashtag')
 
