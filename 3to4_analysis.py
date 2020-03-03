@@ -10,7 +10,7 @@ from networkx.algorithms.triads import triadic_census
 MAX_GROUP_SIZE = 3000
 # MAX_GROUP_SIZE = 1000000
 SHOW_PROGRESS = False
-PLOT_GRAPH = True
+PLOT_GRAPH = True and False
 
 def group_sampling(group):
     if len(group) > MAX_GROUP_SIZE:
@@ -149,27 +149,32 @@ def hashtag_occuring_together(group):
     return result
 
 # count first and second order ties
-def ties_count(links):
-    count_first = 0
-    count_second = 0
-    found_first = set()
-    found_second = set()
+def ties_count(G,links):
+    a = G.number_of_edges();
+    b = G.to_undirected().number_of_edges();
+    return a, a-b
+    # BUG!
+    # count_first = 0
+    # count_second = 0
+    # found_first = set()
+    # found_second = set()
 
-    for u in links:
-        for _v in links[u]:
-            v = _v[0]
-            if v in links and u in map(lambda x: x[0], links[v]): # second order
-                if (u,v) in found_second or (v,u) in found_second:
-                    continue
-                found_second.add((u,v))
-                found_second.add((v,u))
-                count_second += 1
-            else:
-                if (u,v) in found_first or (v,u) in found_first:
-                    continue
-                found_first.add((u,v))
-                count_first += 1
-    return count_first, count_second
+    # for u in links:
+    #     for _v in links[u]:
+    #         v = _v[0]
+    #         if v in links and u in map(lambda x: x[0], links[v]): # second order
+    #             if (u,v) in found_second or (v,u) in found_second:
+    #                 continue
+    #             found_second.add((u,v))
+    #             found_second.add((v,u))
+    #             count_second += 1
+    #         else:
+    #             if (u,v) in found_first or (v,u) in found_first:
+    #                 continue
+    #             found_first.add((u,v))
+    #             count_first += 1
+                
+    # return count_first, count_second
 
 if __name__ == "__main__":    
     db = mongo.connect_to_db()
@@ -189,7 +194,7 @@ if __name__ == "__main__":
             print('Mention Graph Triads')
             print(triadic_census(G))
             print('Mention Graph Ties')
-            print(ties_count(mention_interaction))
+            print(ties_count(G,mention_interaction))
             draw_type1_graph(mention_interaction,str(k)+'-mention')
 
             reply_interaction = reply_links(group)
@@ -197,8 +202,8 @@ if __name__ == "__main__":
             print('Reply Graph Triads')
             print(triadic_census(G))
             print('Reply Graph Ties')
-            print(ties_count(reply_interaction))
-            draw_type1_graph(reply_links, str(k)+'-reply')
+            print(ties_count(G,reply_interaction))
+            draw_type1_graph(reply_interaction, str(k)+'-reply')
             
             hashtag_together = hashtag_occuring_together(group)
             draw_type2_graph(hashtag_together, str(k)+'-hashtag')
@@ -208,7 +213,7 @@ if __name__ == "__main__":
             print('Retweet Graph Triads')
             print(triadic_census(G))
             print('Retweet Graph Ties')
-            print(ties_count(retweet_interaction))
+            print(ties_count(G,retweet_interaction))
             draw_type1_graph(retweet_interaction, str(k)+'-retweet')
         else:
             print()
@@ -223,7 +228,7 @@ if __name__ == "__main__":
             print('Mention Graph Triads')
             print(triadic_census(G))
             print('Mention Graph Ties')
-            print(ties_count(mention_interaction))
+            print(ties_count(G,mention_interaction))
             draw_type1_graph(mention_interaction,str(k)+'-mention')
 
             reply_interaction = reply_links(group)
@@ -231,7 +236,7 @@ if __name__ == "__main__":
             print('Reply Graph Triads')
             print(triadic_census(G))
             print('Reply Graph Ties')
-            print(ties_count(reply_interaction))
+            print(ties_count(G,reply_interaction))
             draw_type1_graph(reply_interaction, str(k)+'-reply')
             
             hashtag_together = hashtag_occuring_together(group)
