@@ -1,3 +1,4 @@
+import api_mongo as mongo
 import pickle
 import nltk
 import networkx as nx
@@ -5,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # A (Users occuring together)
 # links of mentions
-def mention_links(group, group_name='default'):
+def mention_links(group):
     result = {}
 
     for status in group:
@@ -49,7 +50,7 @@ def retweet_links(group, group_name='default'):
 
 # B
 # hashtag ocurring together
-def hashtag_occuring_together(group, group_name='default'):
+def hashtag_occuring_together(group):
     result = {}
 
     for status in group:
@@ -67,28 +68,8 @@ def hashtag_occuring_together(group, group_name='default'):
 
     return result
 
-# print(mention_links(groups[0]))
-# print(hashtag_occuring_together(groups[0]))
-# print(retweet_links(groups[0]))
-
-import api_mongo as mongo
-db = mongo.connect_to_db()
-num_groups = db.get_collection('meta').find_one()['clusters']
-print(num_groups)
-
-for k in range(num_groups+1):
-    if k == num_groups: # all statuses
-        continue
-
-    group = list(db.get_collection(f'group_{k}').find())
-
-# for k,group in groups.items():
-    print(f'group {k}')
-    mention_interaction = mention_links(group, str(k))
-    #there will be no retweet links
-    hashtag_together = hashtag_occuring_together(group, str(k))
-
-    print('mention links')
+def draw_mention_graph(i, group):
+    mention_interaction = mention_links(group)
     G = nx.Graph()
     for user in mention_interaction:
         G.add_node(user)
@@ -101,8 +82,8 @@ for k in range(num_groups+1):
     nx.draw_networkx(G,with_labels = False, node_size = 10)
     plt.show()
 
-
-    print('hashtag occuring together')
+def draw_hash_tag_graph(i, group):
+    hashtag_together = hashtag_occuring_together(group)
     G = nx.Graph()
     for tag in hashtag_together:
         G.add_node(tag)
@@ -112,10 +93,23 @@ for k in range(num_groups+1):
             G.add_edge(tag,co_tag, weight=5, width=5)
 
     pos = nx.spring_layout(G,scale=1,k=0.5)
-
-    # nx.draw(G,pos,font_size=8)
     nx.draw_networkx(G,with_labels = False, node_size = 10)
     plt.show()
-    break
 
+db = mongo.connect_to_db()
+num_groups = db.get_collection('meta').find_one()['clusters']
+print(num_groups)
+
+for k in range(num_groups+1):
+    if k == num_groups: # all statuses
+        pass
+    else:
+        print(f'loading group {k} statuses from DB ...')
+        group = list(db.get_collection(f'group_{k}').find())
+
+    print(f'group {k} of size {len(group)}')
+    print(f'generating mention graph')
+    draw_mention_graph(k, group)
+    print(f'generating hashtag graph')
+    draw_hash_tag_graph(k, group)  
 
