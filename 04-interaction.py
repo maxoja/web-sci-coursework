@@ -4,8 +4,12 @@ import nltk
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
+from networkx.generators.triads import triad_graph
+from networkx.algorithms.triads import triadic_census
 
-MAX_GROUP_SIZE = 2000
+MAX_GROUP_SIZE = 3000
+# MAX_GROUP_SIZE = 1000000
+SHOW_PROGRESS = False
 
 def group_sampling(group):
     if len(group) > MAX_GROUP_SIZE:
@@ -21,21 +25,18 @@ def draw(G):
     nx.draw(G,with_labels=True, node_size=5, font_size=0)
     plt.show()
 
-def draw_type1_graph(links, name):
-    G = nx.Graph()
+def gen_type1_graph(links):
+    G = nx.DiGraph()
     for user in links:
         G.add_node(user)
     
     for i,user in enumerate(links):
-        print('progress', i, len(links.keys()))
+        if SHOW_PROGRESS: print('progress', i, len(links.keys()))
         for mentioned_user in links[user]:
             G.add_edge(user,mentioned_user[1], weight=mentioned_user[0])
-    G = G.to_undirected()
-    print(f'plotting {name} graph')
-    print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
-    draw(G)
+    return G
 
-def draw_type2_graph(links, name):
+def gen_type2_graph(links):
     G = nx.Graph()
     for tag in links:
         G.add_node(tag)
@@ -43,7 +44,16 @@ def draw_type2_graph(links, name):
     for tag in links:
         for co_tag in links[tag]:
             G.add_edge(tag,co_tag, weight=5)
+    return G
 
+def draw_type1_graph(links, name):
+    G = gen_type1_graph(links)
+    print(f'plotting {name} graph')
+    print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
+    draw(G)
+
+def draw_type2_graph(links, name):
+    G = gen_type2_graph(links)
     print('plotting',name,'graph')
     print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
     draw(G)
@@ -70,7 +80,6 @@ def mention_links(group):
         result[user] = nltk.FreqDist(result[user]).most_common()
 
     return result
-
 
 # links of retweet
 def retweet_links(group):
@@ -144,34 +153,49 @@ if __name__ == "__main__":
     num_groups = db.get_collection('meta').find_one()['clusters']
     print(num_groups)
 
-    for k in range(num_groups+1)[:3]:
+    for k in range(num_groups+1):
         if k == num_groups: # all statuses
             print('loadin all statuses from DB ...')
             group = list(db.statuses.find())
 
             print(f'group {k} of size {len(group)}')
             mention_interaction = mention_links(group)
-            draw_type1_graph(mention_interaction,str(k)+'-mention')
+            G = gen_type1_graph(mention_interaction)
+            print('counting mention triads')
+            print(triadic_census(G))
+            # draw_type1_graph(mention_interaction,str(k)+'-mention')
 
             reply_interaction = reply_links(group)
-            draw_type1_graph(reply_links, str(k)+'-reply')
+            G = gen_type1_graph(reply_interaction)
+            print('counting reply triads')
+            print(triadic_census(G))
+            # draw_type1_graph(reply_links, str(k)+'-reply')
             
             hashtag_together = hashtag_occuring_together(group)
-            draw_type2_graph(hashtag_together, str(k)+'-hashtag')
+            # draw_type2_graph(hashtag_together, str(k)+'-hashtag')
 
             retweet_interaction = retweet_links(group)
-            draw_type1_graph(retweet_interaction, str(k)+'-retweet')
+            G = gen_type1_graph(retweet_interaction)
+            print('counting retweet triads')
+            print(triadic_census(G))
+            # draw_type1_graph(retweet_interaction, str(k)+'-retweet')
         else:
             print(f'loading group {k} statuses from DB ...')
             group = list(db.get_collection(f'group_{k}').find())
 
             print(f'group {k} of size {len(group)}')
             mention_interaction = mention_links(group)
-            draw_type1_graph(mention_interaction,str(k)+'-mention')
+            G = gen_type1_graph(mention_interaction)
+            print('counting mention triads')
+            print(triadic_census(G))
+            # draw_type1_graph(mention_interaction,str(k)+'-mention')
 
             reply_interaction = reply_links(group)
-            draw_type1_graph(reply_interaction, str(k)+'-reply')
+            G = gen_type1_graph(reply_interaction)
+            print('counting reply triads')
+            print(triadic_census(G))
+            # draw_type1_graph(reply_interaction, str(k)+'-reply')
             
             hashtag_together = hashtag_occuring_together(group)
-            draw_type2_graph(hashtag_together, str(k)+'-hashtag')
+            # draw_type2_graph(hashtag_together, str(k)+'-hashtag')
 
