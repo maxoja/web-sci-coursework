@@ -145,6 +145,7 @@ if __name__ == '__main__':
 
         mongo.insert_replace_unique_group(db, i, group)
 
+    db.drop_collection('meta')
     db.get_collection('meta').insert({'clusters':n_clusters})
     
     # plot_tsne_pca(vectors, cluster_predict)
