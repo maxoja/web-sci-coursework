@@ -1,0 +1,26 @@
+[group 5]
+size of 3570
+unique posters 3241
+unique hashtags 443
+unique mentions 2643
+
+important posters
+('surendra shetty', 14)
+('Muhammad Farid', 11)
+('Mike', 8)
+('💙✨Traylonda\U0001f9e1✨', 8)
+('Chris', 7)
+
+important hashtags
+('AEWRevolution', 25)
+('UFCNorfolk', 8)
+('SouthCarolinaPrimary', 4)
+('photography', 3)
+('TheInvisbleMan', 3)
+
+important mentions
+('Joe Biden (Text Join to 30330)', 13)
+('Donald J. Trump', 12)
+('Nashville SC’s MLS Debut is TONIGHT', 6)
+('St. Louis BattleHawks', 5)
+('Elizabeth Warren', 5)

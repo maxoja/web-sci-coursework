@@ -1,0 +1,26 @@
+[group 7]
+size of 971
+unique posters 908
+unique hashtags 162
+unique mentions 155
+
+important posters
+('River Levels UK', 27)
+('Tim King', 6)
+('𝘚𝘢𝘴𝘴𝘺𝘴𝘩𝘦𝘳𝘪𝘯𝘢💋', 4)
+('Phil Strickland', 4)
+('☾', 3)
+
+important hashtags
+('March', 7)
+('birthmonth', 3)
+('BirthMonth', 2)
+('minggupagi', 2)
+('Matchmaking', 1)
+
+important mentions
+('Jon Rothstein', 3)
+('Vince Mathews', 2)
+('Duke Men’s Basketball', 2)
+('LANY', 1)
+('lauv', 1)

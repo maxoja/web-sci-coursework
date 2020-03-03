@@ -1,0 +1,26 @@
+[group 0]
+size of 4125
+unique posters 3689
+unique hashtags 239
+unique mentions 2169
+
+important posters
+('My Style', 17)
+('Mawufeasi', 11)
+('Andrew Wong', 10)
+('Daniel B. Orijuela', 10)
+('PeterSweden', 8)
+
+important hashtags
+('coronavirus', 30)
+('Corona', 28)
+('CoronaVirusUpdate', 19)
+('corona', 13)
+('COVID19', 11)
+
+important mentions
+('Donald J. Trump', 280)
+('Nancy Pelosi', 52)
+('Dana Milbank', 31)
+('President Trump', 24)
+('YouTube', 20)

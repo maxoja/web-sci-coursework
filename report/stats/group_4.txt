@@ -1,0 +1,26 @@
+[group 4]
+size of 8532
+unique posters 7303
+unique hashtags 860
+unique mentions 4441
+
+important posters
+('BrexitBot', 14)
+('.', 11)
+('Taylor Rae', 9)
+('💎Diamond Mami 💎', 8)
+('Gouthama Venkata Ramana Raju Chekuri', 8)
+
+important hashtags
+('Endomondo', 75)
+('endorphins', 69)
+('AEWRevolution', 40)
+('WoodenAward', 27)
+('SCprimary2020', 11)
+
+important mentions
+('Joe Biden (Text Join to 30330)', 55)
+('Donald J. Trump', 53)
+("Wendy's", 28)
+('Bernie Sanders', 26)
+('Elizabeth Warren', 15)

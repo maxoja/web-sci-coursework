@@ -1,0 +1,26 @@
+[group 1]
+size of 129056
+unique posters 67594
+unique hashtags 11388
+unique mentions 58891
+
+important posters
+('.', 133)
+('quis custodiet', 115)
+('Chris', 83)
+('Ankhesenamun 🌊⚛⚜🇸🇪', 74)
+('Portland Police log', 72)
+
+important hashtags
+('AEWRevolution', 660)
+('UFCNorfolk', 157)
+('AEW', 157)
+('SCprimary2020', 153)
+('SouthCarolinaPrimary', 138)
+
+important mentions
+('Donald J. Trump', 894)
+('Joe Biden (Text Join to 30330)', 607)
+('Bernie Sanders', 386)
+('Elizabeth Warren', 258)
+('Tom Steyer', 141)

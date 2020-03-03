@@ -1,0 +1,26 @@
+[group 3]
+size of 22627
+unique posters 17263
+unique hashtags 8921
+unique mentions 9365
+
+important posters
+('brandon 🌹🔭', 61)
+('Tickeron', 46)
+('All Elite Wrestling', 26)
+('Mystery Solvent', 20)
+('Marvin R. Jeffcoat', 19)
+
+important hashtags
+('AEWRevolution', 129)
+('MyTwitterAnniversary', 87)
+('AEW', 35)
+('SCprimary2020', 32)
+('LeapDay', 29)
+
+important mentions
+('YouTube', 144)
+('Bernie Sanders', 92)
+('Donald J. Trump', 72)
+('Joe Biden (Text Join to 30330)', 51)
+('Nashville SC’s MLS Debut is TONIGHT', 33)

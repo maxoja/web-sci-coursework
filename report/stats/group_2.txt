@@ -1,0 +1,26 @@
+[group 2]
+size of 2599
+unique posters 2341
+unique hashtags 839
+unique mentions 1198
+
+important posters
+('BoyBandStan⁷', 20)
+('Dr.Bones', 18)
+('gallina fiedler', 7)
+('Terry Dinan', 7)
+('Mark Hansen', 7)
+
+important hashtags
+('ON', 22)
+('Sia', 20)
+('NMS', 18)
+('coronavirus', 12)
+('ctbb', 7)
+
+important mentions
+('방탄소년단', 23)
+('Most Requested Live', 22)
+('Radio Carson PNW', 20)
+('Donald J. Trump', 14)
+('YouTube', 6)

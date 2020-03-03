@@ -1,0 +1,26 @@
+[group all]
+size of 207269
+unique posters 112100
+unique hashtags 20648
+unique mentions 75034
+
+important posters
+('Marvin R. Jeffcoat', 234)
+('.', 221)
+('Chris', 130)
+('quis custodiet', 117)
+('Julie.TrumpsGirl 🇺🇸🇺🇸🇺🇸🇺🇸🇺🇸', 109)
+
+important hashtags
+('AEWRevolution', 894)
+('coronavirus', 249)
+('AEW', 219)
+('SCprimary2020', 200)
+('UFCNorfolk', 198)
+
+important mentions
+('TySne B. Smith', 10141)
+('Donald J. Trump', 1830)
+('Cristiano', 1349)
+('perneeya', 1025)
+('CJ McCollum', 819)

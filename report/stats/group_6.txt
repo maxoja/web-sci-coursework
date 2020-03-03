@@ -1,0 +1,26 @@
+[group 6]
+size of 4455
+unique posters 4044
+unique hashtags 335
+unique mentions 2521
+
+important posters
+('Chelle Belle ❤ EU🇮🇪🇪🇺', 16)
+('🦋', 5)
+('Pussy fairy \U0001f9da🏽\u200d♀️', 5)
+('Simon Clancy', 4)
+('.', 4)
+
+important hashtags
+('AEWRevolution', 19)
+('loveisblindnetflix', 4)
+('loveisblind', 4)
+('SouthCarolinaPrimary', 3)
+('AEW', 3)
+
+important mentions
+('Donald J. Trump', 33)
+('Joe Biden (Text Join to 30330)', 19)
+('Elizabeth Warren', 12)
+('Tom Steyer', 12)
+('Mike Bloomberg', 9)
