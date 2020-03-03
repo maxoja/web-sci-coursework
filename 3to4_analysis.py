@@ -10,7 +10,7 @@ from networkx.algorithms.triads import triadic_census
 MAX_GROUP_SIZE = 3000
 # MAX_GROUP_SIZE = 1000000
 SHOW_PROGRESS = False
-PLOT_GRAPH = True and False
+PLOT_GRAPH = True # and False
 
 def group_sampling(group):
     if len(group) > MAX_GROUP_SIZE:
