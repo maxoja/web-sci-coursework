@@ -32,8 +32,23 @@ def insert_unique_user(db, user:tweepy.models.User):
         print('insert_unique_user() catch error')
         print(e)
 
+def insert_replace_unique_group(db, i, group_statuses):
+    doc_dict = {'id':i,'statuses':group_statuses}
+    collection_name = 'group_'+str(i)
+    try:
+        db.drop_collection(collection_name)
+        for j,s in enumerate(group_statuses):
+            insert_doc(db, collection_name, s)
+            if (j+1)%5000 == 0:
+                print(f'progress:{(j+1)/len(group_statuses):.02f}')
+        print("created and inserted statuses to collection",collection_name)
+    except Exception as e:        
+        print('error')
+        print(e)
+
 def insert_doc(db, collection:str, doc):
     db[collection].insert_one(doc)
+
 
 def connect_to_db():
     url = mongo_url

@@ -14,7 +14,6 @@ from sklearn.manifold import TSNE
 
 seed = 26
 max_clusters = 50
-# best_k = 20
 best_k = 8
 
 db = mongo.connect_to_db()
@@ -61,11 +60,6 @@ def find_optimal_clusters(data, max_k):
     ax.set_ylabel('SSE')
     ax.set_title('SSE by Cluster Center Plot')
     plt.show()
-    
-if __name__ == '__main__':
-    print('max clusters =',max_clusters)
-    find_optimal_clusters(vectors,max_clusters)
-
 
 def plot_tsne_pca(data, labels):
     print('plotting clustering graph')
@@ -101,23 +95,24 @@ def get_top_keywords(data, model, labels, n_terms):
     #     print(','.join([labels[t] for t in np.argsort(r)[-n_terms:]]))
             
 if __name__ == '__main__':
+    # print('max clusters =',max_clusters)
+    # find_optimal_clusters(vectors,max_clusters)
     model = MiniBatchKMeans(n_clusters=best_k, init_size=1024, batch_size=2048, random_state=seed).fit(vectors)
     cluster_predict = model.predict(vectors)
     
-    print('dumping output to file')
+    print('inserting/replacing groups to DB')
     packed = list(zip(cluster_predict, texts, all_statuses))
 
     n_clusters = best_k
-    groups = {}
 
     for i in range(n_clusters):
-        groups[i] = list(filter(lambda x:x[0] == i, packed))
-        
+        group = list(filter(lambda x:x[0] == i, packed))
+        group = list(map(lambda x: x[2],group))
+
         owners = []
         tags = []
         mentions = []
-        for case in groups[i]:
-            _, text, status = case
+        for status in group:
             owners.append(status['user']['name'])
             tags += [ h['text'] for h in status['entities']['hashtags']]
             mentions += [ m['name'] for m in status['entities']['user_mentions']]
@@ -127,11 +122,12 @@ if __name__ == '__main__':
         top_mentions = nltk.FreqDist(mentions).most_common(5)
 
         out_str = f'[group {i}]'
-        out_str += f'\nsize of {len(groups[i])}'
+        out_str += f'\nsize of {len(group)}'
         out_str += f'\nunique posters {len(set(owners))}'
         out_str += f'\nunique hashtags {len(set(tags))}'
         out_str += f'\nunique mentions {len(set(mentions))}'
         out_str += '\n\nimportant posters'
+
         for poster in top_owners:
             out_str += '\n' + str(poster)
 
@@ -147,11 +143,9 @@ if __name__ == '__main__':
             out.write(out_str)
             # print(out_str.encode("utf-8"))
 
-    with open('meta.pickle','wb') as out:
-        pickle.dump({'n_cluster':n_clusters}, out)
+        mongo.insert_replace_unique_group(db, i, group)
 
-    with open('grouped_tweets.pickle','wb') as out:
-        pickle.dump(groups, out)
+    db.get_collection('meta').insert({'clusters':n_clusters})
     
     # plot_tsne_pca(vectors, cluster_predict)
     # clusters = model.predict(vectors)
