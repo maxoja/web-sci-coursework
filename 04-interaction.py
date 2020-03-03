@@ -10,6 +10,7 @@ from networkx.algorithms.triads import triadic_census
 MAX_GROUP_SIZE = 3000
 # MAX_GROUP_SIZE = 1000000
 SHOW_PROGRESS = False
+PLOT_GRAPH = True
 
 def group_sampling(group):
     if len(group) > MAX_GROUP_SIZE:
@@ -20,6 +21,8 @@ def group_sampling(group):
     return group
 
 def draw(G):
+    if not PLOT_GRAPH:
+        return
     # pos = nx.spring_layout(G,scale=1,k=0.5)
     # nx.draw_networkx(G,with_labels = False, node_size = 10)
     nx.draw(G,with_labels=True, node_size=5, font_size=0)
@@ -33,7 +36,7 @@ def gen_type1_graph(links):
     for i,user in enumerate(links):
         if SHOW_PROGRESS: print('progress', i, len(links.keys()))
         for mentioned_user in links[user]:
-            G.add_edge(user,mentioned_user[1], weight=mentioned_user[0])
+            G.add_edge(user,mentioned_user[0], weight=mentioned_user[1])
     return G
 
 def gen_type2_graph(links):
@@ -43,7 +46,7 @@ def gen_type2_graph(links):
     
     for tag in links:
         for co_tag in links[tag]:
-            G.add_edge(tag,co_tag, weight=5)
+            G.add_edge(tag,co_tag, weight=1)
     return G
 
 def draw_type1_graph(links, name):
@@ -148,6 +151,32 @@ def hashtag_occuring_together(group):
 
     return result
 
+def ties_count(links):
+    count_first = 0
+    count_second = 0
+    found_first = set()
+    found_second = set()
+
+    for u in links:
+        for _v in links[u]:
+            v = _v[0]
+            if v in links and u in map(lambda x: x[0], links[v]): # second order
+                if (u,v) in found_second or (v,u) in found_second:
+                    continue
+                found_second.add((u,v))
+                found_second.add((v,u))
+                count_second += 1
+            else:
+                if (u,v) in found_first or (v,u) in found_first:
+                    continue
+                found_first.add((u,v))
+                count_first += 1
+    return count_first, count_second
+    # num_before = G.number_of_edges()
+    # temp = G.to_undirected()
+    # num_after = G.number_of_edges()
+    # return num_after
+
 if __name__ == "__main__":    
     db = mongo.connect_to_db()
     num_groups = db.get_collection('meta').find_one()['clusters']
@@ -155,47 +184,62 @@ if __name__ == "__main__":
 
     for k in range(num_groups+1):
         if k == num_groups: # all statuses
+            print()
             print('loadin all statuses from DB ...')
+            print(f'Group {k}')
             group = list(db.statuses.find())
 
             print(f'group {k} of size {len(group)}')
             mention_interaction = mention_links(group)
             G = gen_type1_graph(mention_interaction)
-            print('counting mention triads')
+            print('Mention Graph Triads')
             print(triadic_census(G))
-            # draw_type1_graph(mention_interaction,str(k)+'-mention')
+            print('Mention Graph Ties')
+            print(ties_count(mention_interaction))
+            draw_type1_graph(mention_interaction,str(k)+'-mention')
 
             reply_interaction = reply_links(group)
             G = gen_type1_graph(reply_interaction)
-            print('counting reply triads')
+            print('Reply Graph Triads')
             print(triadic_census(G))
-            # draw_type1_graph(reply_links, str(k)+'-reply')
+            print('Reply Graph Ties')
+            print(ties_count(reply_interaction))
+            draw_type1_graph(reply_links, str(k)+'-reply')
             
             hashtag_together = hashtag_occuring_together(group)
-            # draw_type2_graph(hashtag_together, str(k)+'-hashtag')
+            draw_type2_graph(hashtag_together, str(k)+'-hashtag')
 
             retweet_interaction = retweet_links(group)
             G = gen_type1_graph(retweet_interaction)
-            print('counting retweet triads')
+            print('Retweet Graph Triads')
             print(triadic_census(G))
-            # draw_type1_graph(retweet_interaction, str(k)+'-retweet')
+            print('Retweet Graph Ties')
+            print(ties_count(retweet_interaction))
+            draw_type1_graph(retweet_interaction, str(k)+'-retweet')
         else:
+            print()
             print(f'loading group {k} statuses from DB ...')
+            print(f'Group {k}')
+            
             group = list(db.get_collection(f'group_{k}').find())
 
             print(f'group {k} of size {len(group)}')
             mention_interaction = mention_links(group)
             G = gen_type1_graph(mention_interaction)
-            print('counting mention triads')
+            print('Mention Graph Triads')
             print(triadic_census(G))
-            # draw_type1_graph(mention_interaction,str(k)+'-mention')
+            print('Mention Graph Ties')
+            print(ties_count(mention_interaction))
+            draw_type1_graph(mention_interaction,str(k)+'-mention')
 
             reply_interaction = reply_links(group)
             G = gen_type1_graph(reply_interaction)
-            print('counting reply triads')
+            print('Reply Graph Triads')
             print(triadic_census(G))
-            # draw_type1_graph(reply_interaction, str(k)+'-reply')
+            print('Reply Graph Ties')
+            print(ties_count(reply_interaction))
+            draw_type1_graph(reply_interaction, str(k)+'-reply')
             
             hashtag_together = hashtag_occuring_together(group)
-            # draw_type2_graph(hashtag_together, str(k)+'-hashtag')
+            draw_type2_graph(hashtag_together, str(k)+'-hashtag')
 
