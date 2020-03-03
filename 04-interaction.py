@@ -3,11 +3,30 @@ import pickle
 import nltk
 import networkx as nx
 import matplotlib.pyplot as plt
+import random
+
+MAX_GROUP_SIZE = 2000
+
+def group_sampling(group):
+    if len(group) > MAX_GROUP_SIZE:
+        group = group.copy()
+        random.shuffle(group)
+        group = group[:MAX_GROUP_SIZE]
+
+    return group
+
+def draw(G):
+    # pos = nx.spring_layout(G,scale=1,k=0.5)
+    # nx.draw_networkx(G,with_labels = False, node_size = 10)
+    nx.draw(G,with_labels=True, node_size=5, font_size=0)
+    plt.show()
 
 # A (Users occuring together)
 # links of mentions
 def mention_links(group):
     result = {}
+    
+    group = group_sampling(group)
 
     for status in group:
         # owner = status['user']['name']
@@ -25,9 +44,12 @@ def mention_links(group):
 
     return result
 
+
 # links of retweet
 def retweet_links(group, group_name='default'):
     result = {}
+
+    group = group_sampling(group)
 
     for status in group:
         owner = status['user']['id']
@@ -52,6 +74,8 @@ def retweet_links(group, group_name='default'):
 # hashtag ocurring together
 def hashtag_occuring_together(group):
     result = {}
+    
+    group = group_sampling(group)
 
     for status in group:
         # owner = status['user']['name']
@@ -74,13 +98,14 @@ def draw_mention_graph(i, group):
     for user in mention_interaction:
         G.add_node(user)
     
-    for user in mention_interaction:
+    for i,user in enumerate(mention_interaction):
+        print('progress', i, len(mention_interaction.keys()))
         for mentioned_user in mention_interaction[user]:
-            G.add_edge(user,mentioned_user[1], weight=mentioned_user[0], width=mentioned_user[0])
+            G.add_edge(user,mentioned_user[1], weight=mentioned_user[0])
 
-    pos = nx.spring_layout(G,scale=1,k=0.5)
-    nx.draw_networkx(G,with_labels = False, node_size = 10)
-    plt.show()
+    print('ploting mention graph')
+    print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
+    draw(G)
 
 def draw_hash_tag_graph(i, group):
     hashtag_together = hashtag_occuring_together(group)
@@ -90,19 +115,37 @@ def draw_hash_tag_graph(i, group):
     
     for tag in hashtag_together:
         for co_tag in hashtag_together[tag]:
-            G.add_edge(tag,co_tag, weight=5, width=5)
+            G.add_edge(tag,co_tag, weight=5)
 
-    pos = nx.spring_layout(G,scale=1,k=0.5)
-    nx.draw_networkx(G,with_labels = False, node_size = 10)
-    plt.show()
+    print('plotting hashtag graph')
+    print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
+    draw(G)
+
+def draw_retweet_graph(i, group):
+    retweet_interaction = retweet_links(group)
+
+    G = nx.Graph()
+
+    for user in retweet_interaction:
+        G.add_node(user)
+    
+    for i,user in enumerate(retweet_interaction):
+        print('progress', i, len(retweet_interaction.keys()))
+        for retweeted_users in retweet_interaction[user]:
+            G.add_edge(user,retweeted_user[1], weight=retweeted_user[0])
+
+    print('ploting retweet graph')
+    print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
+    draw(G)
 
 db = mongo.connect_to_db()
 num_groups = db.get_collection('meta').find_one()['clusters']
 print(num_groups)
 
-for k in range(num_groups+1):
+for k in range(num_groups+1)[:3]:
     if k == num_groups: # all statuses
-        pass
+        print('loadin all statuses from DB ...')
+        group = list(db.statuses.find())
     else:
         print(f'loading group {k} statuses from DB ...')
         group = list(db.get_collection(f'group_{k}').find())
