@@ -21,6 +21,33 @@ def draw(G):
     nx.draw(G,with_labels=True, node_size=5, font_size=0)
     plt.show()
 
+def draw_type1_graph(links, name):
+    G = nx.Graph()
+    for user in links:
+        G.add_node(user)
+    
+    for i,user in enumerate(links):
+        print('progress', i, len(links.keys()))
+        for mentioned_user in links[user]:
+            G.add_edge(user,mentioned_user[1], weight=mentioned_user[0])
+    G = G.to_undirected()
+    print(f'plotting {name} graph')
+    print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
+    draw(G)
+
+def draw_type2_graph(links, name):
+    G = nx.Graph()
+    for tag in links:
+        G.add_node(tag)
+    
+    for tag in links:
+        for co_tag in links[tag]:
+            G.add_edge(tag,co_tag, weight=5)
+
+    print('plotting',name,'graph')
+    print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
+    draw(G)
+
 # A (Users occuring together)
 # links of mentions
 def mention_links(group):
@@ -112,67 +139,27 @@ def hashtag_occuring_together(group):
 
     return result
 
-def draw_mention_graph(i, group):
-    mention_interaction = mention_links(group)
-    G = nx.Graph()
-    for user in mention_interaction:
-        G.add_node(user)
-    
-    for i,user in enumerate(mention_interaction):
-        print('progress', i, len(mention_interaction.keys()))
-        for mentioned_user in mention_interaction[user]:
-            G.add_edge(user,mentioned_user[1], weight=mentioned_user[0])
-    G = G.to_undirected()
-    print('ploting mention graph')
-    print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
-    draw(G)
+if __name__ == "__main__":    
+    db = mongo.connect_to_db()
+    num_groups = db.get_collection('meta').find_one()['clusters']
+    print(num_groups)
 
-def draw_hash_tag_graph(i, group):
-    hashtag_together = hashtag_occuring_together(group)
-    G = nx.Graph()
-    for tag in hashtag_together:
-        G.add_node(tag)
-    
-    for tag in hashtag_together:
-        for co_tag in hashtag_together[tag]:
-            G.add_edge(tag,co_tag, weight=5)
+    for k in range(num_groups+1)[:3]:
+        if k == num_groups: # all statuses
+            print('loadin all statuses from DB ...')
+            group = list(db.statuses.find())
+        else:
+            print(f'loading group {k} statuses from DB ...')
+            group = list(db.get_collection(f'group_{k}').find())
 
-    print('plotting hashtag graph')
-    print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
-    draw(G)
+        print(f'group {k} of size {len(group)}')
+        
+        mention_interaction = mention_links(group)
+        draw_type1_graph(mention_interaction,'mention')
 
-def draw_retweet_graph(i, group):
-    retweet_interaction = retweet_links(group)
+        hashtag_together = hashtag_occuring_together(group)
+        draw_type2_graph(hashtag_together, 'hashtag')
 
-    G = nx.Graph()
-
-    for user in retweet_interaction:
-        G.add_node(user)
-    
-    for i,user in enumerate(retweet_interaction):
-        print('progress', i, len(retweet_interaction.keys()))
-        for retweeted_users in retweet_interaction[user]:
-            G.add_edge(user,retweeted_user[1], weight=retweeted_user[0])
-
-    print('ploting retweet graph')
-    print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
-    draw(G)
-
-db = mongo.connect_to_db()
-num_groups = db.get_collection('meta').find_one()['clusters']
-print(num_groups)
-
-for k in range(num_groups+1)[:3]:
-    if k == num_groups: # all statuses
-        print('loadin all statuses from DB ...')
-        group = list(db.statuses.find())
-    else:
-        print(f'loading group {k} statuses from DB ...')
-        group = list(db.get_collection(f'group_{k}').find())
-
-    print(f'group {k} of size {len(group)}')
-    print(f'generating mention graph')
-    draw_mention_graph(k, group)
-    print(f'generating hashtag graph')
-    draw_hash_tag_graph(k, group)  
+        retweet_interaction = retweet_links(group)
+        draw_type1_graph(retweet_interaction, 'retweet')
 
