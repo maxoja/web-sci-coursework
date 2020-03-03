@@ -3,13 +3,6 @@ import nltk
 import networkx as nx
 import matplotlib.pyplot as plt
 
-print('loading dump file')
-with open('grouped_tweets.pickle','rb') as f:
-    groups = pickle.load(f)
-
-n_clusters = len(groups.keys())
-print('dump file loaded')
-
 # A (Users occuring together)
 # links of mentions
 def mention_links(group, group_name='default'):
@@ -78,12 +71,22 @@ def hashtag_occuring_together(group, group_name='default'):
 # print(hashtag_occuring_together(groups[0]))
 # print(retweet_links(groups[0]))
 
-for k,group in groups.items():
+import api_mongo as mongo
+db = mongo.connect_to_db()
+num_groups = db.get_collection('meta').find_one()['clusters']
+print(num_groups)
+
+for k in range(num_groups+1):
+    if k == num_groups: # all statuses
+        continue
+
+    group = list(db.get_collection(f'group_{k}').find())
+
+# for k,group in groups.items():
     print(f'group {k}')
-    only_statuses = [case[2] for case in group]
-    mention_interaction = mention_links(only_statuses, str(k))
+    mention_interaction = mention_links(group, str(k))
     #there will be no retweet links
-    hashtag_together = hashtag_occuring_together(only_statuses, str(k))
+    hashtag_together = hashtag_occuring_together(group, str(k))
 
     print('mention links')
     G = nx.Graph()
@@ -113,6 +116,6 @@ for k,group in groups.items():
     # nx.draw(G,pos,font_size=8)
     nx.draw_networkx(G,with_labels = False, node_size = 10)
     plt.show()
-    return
+    break
 
 
