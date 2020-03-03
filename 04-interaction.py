@@ -46,7 +46,7 @@ def mention_links(group):
 
 
 # links of retweet
-def retweet_links(group, group_name='default'):
+def retweet_links(group):
     result = {}
 
     group = group_sampling(group)
@@ -68,7 +68,27 @@ def retweet_links(group, group_name='default'):
     return result
 
 # links of reply
-# this will be left unimplemented since {'reply_count':{$gt:0}} returns no document
+def reply_links(group):
+    result = {}
+
+    group = group_sampling(group)
+
+    for status in group:
+        owner = status['user']['id']
+        replied_user = status['in_reply_to_user_id']
+
+        if replied_user is None or replied_user == 'null':
+            continue
+
+        if not owner in result:
+            result[owner] = [replied_user]
+        else:
+            result[owner].append(replied_user)
+
+    for user in result:
+        result[user] = nltk.FreqDist(result[user]).most_common()
+
+    return result
 
 # B
 # hashtag ocurring together
@@ -102,7 +122,7 @@ def draw_mention_graph(i, group):
         print('progress', i, len(mention_interaction.keys()))
         for mentioned_user in mention_interaction[user]:
             G.add_edge(user,mentioned_user[1], weight=mentioned_user[0])
-
+    G = G.to_undirected()
     print('ploting mention graph')
     print(f'with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
     draw(G)
